@@ -1,0 +1,35 @@
+version: '3.8' # docker version
+
+services:
+
+  #project name 
+  app:
+
+    image: php:apache # setting up the environment: PHP running on Apache server.
+    volumes:
+      # sync PHP code with Docker - map: ./ (the current root folder) to /var/www/html (path to Docker container)
+      - "./:/var/www/html"
+    ports:
+      - 80:80 # default port for localhost
+      - 443:443 # for future ssl
+
+  # MySQL Service
+  db:
+    image: mysql:latest
+
+    environment:
+      - MYSQL_DATABASE=php_docker # name for database
+      - MYSQL_USER=php_docker # user name for mysql
+      - MYSQL_PASSWORD=password # password for mysql
+    #      - MYSQL_ALLOW_EMPTY_PASSWORD=1          # allow empty password
+    volumes:
+      - "./db:/docker-entrypoint-initdb.d" # this is how we persist a sql db even when container stops
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8001:80
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
